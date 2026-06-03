@@ -3,9 +3,10 @@
 const SUPABASE_URL = 'https://fhrknlmxbgqfeqvglbmo.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_xyreo5ablTJ9nTStil0CvA_4r8cc6z_';
 
-const supabaseClient = (SUPABASE_URL.startsWith('https://'))
-  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+const supabaseClient =
+  window.supabase && SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.startsWith('sb_')
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
 
 const DEMO_SCHOOL_ID = null; // optional: set after creating a school record.
 const areas = [
