@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BigCat Social Growth</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <strong>🌈 BigCat Social Growth</strong>
+      <span>사회성 성장 포트폴리오 MVP</span>
+    </div>
+    <nav>
+      <button onclick="showPage('home')">홈</button>
+      <button onclick="showPage('parent')">학부모</button>
+      <button onclick="showPage('teacher')">교사 관리자</button>
+      <button onclick="showPage('report')">리포트</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="home" class="page active hero">
+      <div class="card hero-card">
+        <div class="badge">기관용 + 가정용</div>
+        <h1>우리 아이 사회성 성장 이야기</h1>
+        <p>학기 시작 부모 입력 → 교사 1학기 관찰 → 가정 재평가 → 2학기 관찰 → 최종 성장 포트폴리오</p>
+        <div class="flow">
+          <span>🏠 부모 초기</span><span>→</span><span>👩‍🏫 1학기</span><span>→</span><span>🌱 이렇게 성장</span><span>→</span><span>🏆 최종 리포트</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="parent" class="page">
+      <div class="grid2">
+        <div class="card">
+          <h2>🏠 가정용 정보 입력</h2>
+          <label>아이 이름<input id="childName" placeholder="예: 세윤" /></label>
+          <label>생년월일<input id="birthDate" type="date" /></label>
+          <label>성별<select id="gender"><option>선택 안 함</option><option>남</option><option>여</option></select></label>
+          <label>형제자매 여부<input id="siblings" placeholder="예: 외동 / 형 있음" /></label>
+          <label>기관 경험<input id="experience" placeholder="예: 처음 / 1년 이상" /></label>
+          <label>보호자 이름<input id="guardianName" /></label>
+          <label>보호자 연락처<input id="guardianPhone" /></label>
+        </div>
+        <div class="card">
+          <h2>🎭 사회성 탐험</h2>
+          <div id="quizBox"></div>
+          <button class="primary" onclick="submitParentAssessment('initial')">초기 사회성 탐험 제출</button>
+          <button class="secondary" onclick="submitParentAssessment('home_growth')">이렇게 성장했어요 제출</button>
+          <p id="parentMsg" class="msg"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="teacher" class="page">
+      <div class="grid2">
+        <div class="card">
+          <h2>👩‍🏫 아동 목록</h2>
+          <button class="secondary" onclick="loadChildren()">아동 불러오기</button>
+          <div id="childrenList" class="list"></div>
+
+          <div id="editChildBox" class="edit-box" style="display:none">
+            <h3>✏️ 아동 정보 수정</h3>
+            <input id="editChildId" type="hidden" />
+            <label>아이 이름<input id="editChildName" /></label>
+            <label>생년월일<input id="editBirthDate" type="date" /></label>
+            <label>성별<select id="editGender"><option>선택 안 함</option><option>남</option><option>여</option></select></label>
+            <label>형제자매 여부<input id="editSiblings" /></label>
+            <label>기관 경험<input id="editExperience" /></label>
+            <label>보호자 이름<input id="editGuardianName" /></label>
+            <label>보호자 연락처<input id="editGuardianPhone" /></label>
+            <label>관리 메모<textarea id="editMemo" placeholder="교사용 메모"></textarea></label>
+            <div class="button-row">
+              <button class="primary small-primary" onclick="updateChild()">아동 정보 저장</button>
+              <button class="secondary" onclick="closeEditChild()">닫기</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h2 id="teacherFormTitle">📝 교사 관찰 입력</h2>
+          <input id="editingAssessmentId" type="hidden" />
+          <label>선택 아동 ID<input id="selectedChildId" readonly /></label>
+          <label>평가 시기<select id="teacherPhase"><option value="semester1">1학기</option><option value="semester2">2학기</option></select></label>
+          <div id="teacherScores" class="score-grid"></div>
+          <label>교사 코멘트<textarea id="teacherComment" placeholder="예: 친구와 함께 놀이를 구성하며 협동하는 모습이 늘었습니다."></textarea></label>
+          <div class="button-row">
+            <button class="primary small-primary" onclick="submitTeacherAssessment()">교사 평가 저장/수정</button>
+            <button class="secondary" onclick="cancelEditAssessment()">새 평가 입력</button>
+          </div>
+          <h3>📋 저장된 교사 평가</h3>
+          <div id="assessmentList" class="list muted-box">아동을 선택하면 평가 목록이 표시됩니다.</div>
+          <p id="teacherMsg" class="msg"></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="report" class="page">
+      <div class="card report-card">
+        <h2>📊 성장 리포트</h2>
+        <label>아동 ID<input id="reportChildId" placeholder="교사 관리자에서 선택 후 복사됨" /></label>
+        <button class="primary" onclick="generateReport()">리포트 생성</button>
+        <div id="reportOutput" class="report-output"></div>
+        <canvas id="growthChart" height="140"></canvas>
+        <button class="secondary" onclick="window.print()">PDF로 저장 / 인쇄</button>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
