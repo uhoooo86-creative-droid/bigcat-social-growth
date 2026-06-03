@@ -1,7 +1,7 @@
 // BigCat Social Growth MVP
 // 1) Replace these two values after making a Supabase project.
-const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://fhrknlmxbgqfeqvglbmo.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_xyreo5ablTJ9nTStil0CvA_4r8cc6z_';
 
 const supabaseClient =
   window.supabase && SUPABASE_URL.startsWith('https://') && SUPABASE_ANON_KEY.startsWith('sb_')
